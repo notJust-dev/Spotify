@@ -1,0 +1,122 @@
+type SearchAlbum {
+  album_type: String
+  artists: [SearchArtistsEntry]
+  available_markets: [String]
+  external_urls: SearchExternalUrls1
+  href: String
+  id: String
+  images: [SearchImagesEntry]
+  name: String
+  release_date: Date
+  release_date_precision: String
+  total_tracks: Int
+  type: String
+  uri: String
+}
+
+type SearchArtists1Entry {
+  external_urls: SearchExternalUrls2
+  href: String
+  id: String
+  name: String
+  type: String
+  uri: String
+}
+
+type SearchArtistsEntry {
+  external_urls: SearchExternalUrls
+  href: String
+  id: String
+  name: String
+  type: String
+  uri: String
+}
+
+type SearchExternalIds {
+  isrc: String
+}
+
+type SearchExternalUrls {
+  spotify: String
+}
+
+type SearchExternalUrls1 {
+  spotify: String
+}
+
+type SearchExternalUrls2 {
+  spotify: String
+}
+
+type SearchExternalUrls3 {
+  spotify: String
+}
+
+type SearchImagesEntry {
+  height: Int
+  url: String
+  width: Int
+}
+
+type SearchItemsEntry {
+  album: SearchAlbum
+  artists: [SearchArtists1Entry]
+  available_markets: [String]
+  disc_number: Int
+  duration_ms: Int
+  explicit: Boolean
+  external_ids: SearchExternalIds
+  external_urls: SearchExternalUrls3
+  href: String
+  id: String
+  is_local: Boolean
+  name: String
+  popularity: Int
+  preview_url: String
+  track_number: Int
+  type: String
+  uri: String
+}
+
+type SearchResult {
+  tracks: SearchTracks
+}
+
+type SearchTracks {
+  href: String
+  items: [SearchItemsEntry]
+  limit: Int
+  next: String
+  offset: Int
+  """
+  Field "previous" is defined as JSON since its value was always 'null'
+  """
+  previous: JSON
+  total: Int
+}
+
+# enum SearchTypes {
+#   album
+#   artist
+#   playlist
+#   track
+#   show
+#   episode
+#   audiobook
+# }
+
+type Query {
+  _search(q: String, access_token: String!): SearchResult
+    @rest(
+      endpoint: "https://api.spotify.com/v1/search?type=track"
+      headers: [{ name: "authorization", value: "Bearer $access_token" }]
+    )
+
+  search(q: String): SearchResult
+    @sequence(
+      steps: [
+        { query: "getToken" }
+        { query: "_search", arguments: [{ name: "q", argument: "q" }] }
+      ]
+    )
+}
