@@ -5,6 +5,7 @@ schema
       "auth/index.graphql"
       "search/index.graphql"
       "track/index.graphql"
+      "postgresql/index.graphql"
     ]
   ) {
   query: Query

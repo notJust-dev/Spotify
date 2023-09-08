@@ -87,7 +87,6 @@ type Query {
       endpoint: "https://api.spotify.com/v1/tracks/$trackId;"
       headers: [{ name: "authorization", value: "Bearer $access_token" }]
     )
-
   getTrack(trackId: String!): TrackResponse
     @sequence(
       steps: [

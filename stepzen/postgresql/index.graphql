@@ -1,0 +1,80 @@
+type Favorites {
+  id: ID!
+  trackid: String
+  userid: String
+
+  track: TrackResponse
+    @materializer(
+      query: "getTrack"
+      arguments: [{ name: "trackId", field: "trackid" }]
+    )
+}
+
+"""
+The following queries are just a set of examples of how to access your schema.
+Feel free to modify them or aggregate more.
+"""
+type Query {
+  " Queries for type 'Favorites' "
+  favoritesByTrackid(trackid: String!): [Favorites]
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "favorites"
+      configuration: "postgresql_config"
+    )
+  favoritesByTrackidAndUserid(trackid: String!, userid: String!): [Favorites]
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "favorites"
+      configuration: "postgresql_config"
+    )
+  favoritesByUserid(userid: String!): [Favorites]
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "favorites"
+      configuration: "postgresql_config"
+    )
+  favoritesList: [Favorites]
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "favorites"
+      configuration: "postgresql_config"
+    )
+  favoritesPaginatedList(first: Int, after: Int): [Favorites]
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      query: """
+      SELECT "id", "trackid", "userid" FROM "favorites" LIMIT $1 OFFSET $2
+      """
+      configuration: "postgresql_config"
+    )
+}
+
+"""
+The following mutations are just a set of examples of how to access your schema.
+Feel free to modify them or aggregate more.
+"""
+type Mutation {
+  " Mutations for type 'Favorites' "
+  deleteFavorites(trackid: String!, userid: String!): Favorites
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "favorites"
+      dml: DELETE
+      configuration: "postgresql_config"
+    )
+  insertFavorites(trackid: String, userid: String): Favorites
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "favorites"
+      dml: INSERT
+      configuration: "postgresql_config"
+    )
+}

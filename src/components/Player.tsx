@@ -4,11 +4,48 @@ import { usePlayerContext } from '../providers/PlayerProvider';
 import { useEffect, useState } from 'react';
 import { AVPlaybackStatus, Audio } from 'expo-av';
 import { Sound } from 'expo-av/build/Audio';
+import { gql, useMutation, useQuery } from '@apollo/client';
+
+const insertFavoriteMutation = gql`
+  mutation MyMutation($userId: String!, $trackId: String!) {
+    insertFavorites(userid: $userId, trackid: $trackId) {
+      id
+      trackid
+      userid
+    }
+  }
+`;
+
+const removeFavoriteMutation = gql`
+  mutation MyMutation($trackId: String!, $userId: String!) {
+    deleteFavorites(trackid: $trackId, userid: $userId) {
+      id
+    }
+  }
+`;
+
+const isFavoriteQuery = gql`
+  query MyQuery($trackId: String!, $userId: String!) {
+    favoritesByTrackidAndUserid(trackid: $trackId, userid: $userId) {
+      id
+      trackid
+      userid
+    }
+  }
+`;
 
 const Player = () => {
   const [sound, setSound] = useState<Sound>();
   const [isPlaying, setIsPlaying] = useState(false);
   const { track } = usePlayerContext();
+
+  const [insertFavorite] = useMutation(insertFavoriteMutation);
+  const [removeFavorite] = useMutation(removeFavoriteMutation);
+
+  const { data, refetch } = useQuery(isFavoriteQuery, {
+    variables: { userId: 'vadim', trackId: track?.id || '' },
+  });
+  const isLiked = data?.favoritesByTrackidAndUserid?.length > 0;
 
   useEffect(() => {
     playTrack();
@@ -59,6 +96,20 @@ const Player = () => {
     }
   };
 
+  const onLike = async () => {
+    if (!track) return;
+    if (isLiked) {
+      await removeFavorite({
+        variables: { userId: 'vadim', trackId: track.id },
+      });
+    } else {
+      await insertFavorite({
+        variables: { userId: 'vadim', trackId: track.id },
+      });
+    }
+    refetch();
+  };
+
   if (!track) {
     return null;
   }
@@ -76,7 +127,8 @@ const Player = () => {
         </View>
 
         <Ionicons
-          name={'heart-outline'}
+          onPress={onLike}
+          name={isLiked ? 'heart' : 'heart-outline'}
           size={20}
           color={'white'}
           style={{ marginHorizontal: 10 }}

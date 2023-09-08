@@ -95,23 +95,12 @@ type SearchTracks {
   total: Int
 }
 
-# enum SearchTypes {
-#   album
-#   artist
-#   playlist
-#   track
-#   show
-#   episode
-#   audiobook
-# }
-
 type Query {
   _search(q: String, access_token: String!): SearchResult
     @rest(
       endpoint: "https://api.spotify.com/v1/search?type=track"
       headers: [{ name: "authorization", value: "Bearer $access_token" }]
     )
-
   search(q: String): SearchResult
     @sequence(
       steps: [
