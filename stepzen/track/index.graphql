@@ -1,0 +1,101 @@
+type TrackAlbum {
+  album_type: String
+  artists: [TrackArtistsEntry]
+  available_markets: [JSON]
+  external_urls: TrackExternalUrls1
+  href: String
+  id: String
+  images: [TrackImagesEntry]
+  name: String
+  release_date: Date
+  release_date_precision: String
+  total_tracks: Int
+  type: String
+  uri: String
+}
+
+type TrackArtists1Entry {
+  external_urls: TrackExternalUrls2
+  href: String
+  id: String
+  name: String
+  type: String
+  uri: String
+}
+
+type TrackArtistsEntry {
+  external_urls: TrackExternalUrls
+  href: String
+  id: String
+  name: String
+  type: String
+  uri: String
+}
+
+type TrackExternalIds {
+  isrc: String
+}
+
+type TrackExternalUrls {
+  spotify: String
+}
+
+type TrackExternalUrls1 {
+  spotify: String
+}
+
+type TrackExternalUrls2 {
+  spotify: String
+}
+
+type TrackExternalUrls3 {
+  spotify: String
+}
+
+type TrackImagesEntry {
+  height: Int
+  url: String
+  width: Int
+}
+
+type TrackResponse {
+  album: TrackAlbum
+  artists: [TrackArtists1Entry]
+  available_markets: [JSON]
+  disc_number: Int
+  duration_ms: Int
+  explicit: Boolean
+  external_ids: TrackExternalIds
+  external_urls: TrackExternalUrls3
+  href: String
+  id: String
+  is_local: Boolean
+  name: String
+  popularity: Int
+  """
+  Field "preview_url" is defined as JSON since its value was always 'null'
+  """
+  preview_url: JSON
+  track_number: Int
+  type: String
+  uri: String
+}
+
+type Query {
+  _getTrack(trackId: String!, access_token: String!): TrackResponse
+    @rest(
+      endpoint: "https://api.spotify.com/v1/tracks/$trackId;"
+      headers: [{ name: "authorization", value: "Bearer $access_token" }]
+    )
+
+  getTrack(trackId: String!): TrackResponse
+    @sequence(
+      steps: [
+        { query: "getToken" }
+        {
+          query: "_getTrack"
+          arguments: [{ name: "trackId", argument: "trackId" }]
+        }
+      ]
+    )
+}
