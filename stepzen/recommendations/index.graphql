@@ -1,0 +1,114 @@
+type RecommendAlbum {
+  album_type: String
+  artists: [RecommendArtistsEntry]
+  available_markets: [String]
+  external_urls: RecommendExternalUrls1
+  href: String
+  id: String
+  images: [RecommendImagesEntry]
+  name: String
+  release_date: String
+  release_date_precision: String
+  total_tracks: Int
+  type: String
+  uri: String
+}
+
+type RecommendArtists1Entry {
+  external_urls: RecommendExternalUrls2
+  href: String
+  id: String
+  name: String
+  type: String
+  uri: String
+}
+
+type RecommendArtistsEntry {
+  external_urls: RecommendExternalUrls
+  href: String
+  id: String
+  name: String
+  type: String
+  uri: String
+}
+
+type RecommendExternalIds {
+  isrc: String
+}
+
+type RecommendExternalUrls {
+  spotify: String
+}
+
+type RecommendExternalUrls1 {
+  spotify: String
+}
+
+type RecommendExternalUrls2 {
+  spotify: String
+}
+
+type RecommendExternalUrls3 {
+  spotify: String
+}
+
+type RecommendImagesEntry {
+  height: Int
+  url: String
+  width: Int
+}
+
+type RecommendSeedsEntry {
+  afterFilteringSize: Int
+  afterRelinkingSize: Int
+  """
+  Field "href" is defined as JSON since its value was always 'null'
+  """
+  href: JSON
+  id: String
+  initialPoolSize: Int
+  type: String
+}
+
+type RecommendTracksEntry {
+  album: RecommendAlbum
+  artists: [RecommendArtists1Entry]
+  available_markets: [String]
+  disc_number: Int
+  duration_ms: Int
+  explicit: Boolean
+  external_ids: RecommendExternalIds
+  external_urls: RecommendExternalUrls3
+  href: String
+  id: String
+  is_local: Boolean
+  name: String
+  popularity: Int
+  preview_url: String
+  track_number: Int
+  type: String
+  uri: String
+}
+
+type Recommendation {
+  seeds: [RecommendSeedsEntry]
+  tracks: [RecommendTracksEntry]
+}
+
+type Query {
+  _recommendations(seed_genres: String, access_token: String!): Recommendation
+    @rest(
+      endpoint: "https://api.spotify.com/v1/recommendations"
+      headers: [{ name: "authorization", value: "Bearer $access_token" }]
+    )
+  recommendations(seed_genres: String): Recommendation
+    @sequence(
+      steps: [
+        { query: "getToken" }
+        {
+          query: "_recommendations"
+          arguments: [{ name: "seed_genres", argument: "seed_genres" }]
+        }
+      ]
+    )
+}

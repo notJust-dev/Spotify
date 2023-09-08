@@ -1,0 +1,17 @@
+type TokenResponse {
+  access_token: String
+  expires_in: Int
+  token_type: String
+}
+
+type Query {
+  getToken: TokenResponse
+    @rest(
+      method: POST
+      endpoint: "https://accounts.spotify.com/api/token?grant_type=client_credentials&client_id=$client_id&client_secret=$client_secret"
+      headers: [
+        { name: "content-type", value: "application/x-www-form-urlencoded" }
+      ]
+      configuration: "auth_config"
+    )
+}
